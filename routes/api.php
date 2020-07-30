@@ -1,6 +1,7 @@
 <?php
-
+use App\Http\Controllers\NewsController;
 use Illuminate\Http\Request;
+Use App\Article;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,21 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});*/
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('register', 'AuthController@register')->name('register');
+    Route::post('login', 'AuthController@login')->name('login');
+    Route::post('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
 });
+
+//Route::get('/news', 'NewsController@index');
+//Route::get('/news/{news}', 'NewsController@show');
+//Route::post('/news', 'NewsController@store');
+//Route::resource('news', 'NewsController');
+Route::group(['middleware' => ['auth:api', 'verified']], function () {
+    Route::get('user', 'AuthController@user')->name('user');
+    Route::resource('news', 'NewsController')->middleware('verified');
+});
+

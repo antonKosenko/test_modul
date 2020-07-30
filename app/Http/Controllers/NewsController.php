@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\News;
-use Illuminate\Http\Request;
+use App\Models\News;
+use App\Http\Requests\NewsCreateRequest;
+use \Auth;
 
 class NewsController extends Controller
 {
@@ -14,72 +15,24 @@ class NewsController extends Controller
      */
     public function index()
     {
-        //
+        return News::with('comments')->paginate();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+
+    public function store(NewsCreateRequest $request)
     {
-        //
+        $news = new News($request->validated());
+        $news->user_id = Auth::id();
+        $news->save();
+
+        return $news;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
-     */
     public function show(News $news)
     {
-        //
+        return $news = News::findOrFail($news);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(News $news)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, News $news)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(News $news)
-    {
-        //
-    }
 }

@@ -19,7 +19,7 @@ class CreateNewsTable extends Migration
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-           // $table->integer('user_id')->unsigned()->comment('id author');
+            $table->integer('user_id')->unsigned()->nullable()->comment('id author');
             $table->string('title', 120);
             $table->text('body');
             $table->timestamps();

@@ -12,5 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response('API is alive!');
 });
+
+Auth::routes(['verify' => true]);
