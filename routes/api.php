@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth:api'/*, 'verified'*/]], function () {
     Route::post('user/subscribe/{id}', 'AuthController@subscribe')->name('user.subscribe');
 
     Route::resource('news', 'NewsController');
+    Route::get('newsTopComments', 'NewsController@topComments');
     Route::resource('comments', 'CommentsController');
    // Route::delete('news/{id}', 'NewsController@destroy');
 });

@@ -7,6 +7,7 @@ use App\Http\Requests\NewsUpdateRequest;
 use App\Models\Comments;
 use App\Models\News;
 use App\Http\Requests\NewsCreateRequest;
+use App\Models\User;
 use \Auth;
 use DB;
 use Prettus\Validator\Contracts\ValidatorInterface;
@@ -67,12 +68,24 @@ class NewsController extends Controller
 
     }
 
+    public function topComments()
+    {
+        $tableNews = (new News)->getTable();
+        $tableComment = (new Comments)->getTable();
+
+        return News::select("$tableNews.*")
+            ->selectRaw("count($tableComment.news_id) as count")
+            ->leftjoin($tableComment, "$tableComment.news_id", "=", "$tableNews.id")
+            ->orderBy('count', "DESC")
+            ->groupBy("$tableNews.id")
+            ->paginate();
+    }
+
     private function checkIsOwner($news)
     {
         if ($news->user_id != Auth::id()) {
             abort(403);
         }
     }
-
 
 }
