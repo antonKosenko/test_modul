@@ -14,6 +14,8 @@ Use App\Article;
 |
 */
 
+Auth::routes(['verify' => false]);
+
 Route::group(['prefix' => 'auth'], function () {
     Route::post('register', 'AuthController@register')->name('register');
     Route::post('login', 'AuthController@login')->name('login');

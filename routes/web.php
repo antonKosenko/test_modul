@@ -15,4 +15,4 @@ Route::get('/', function () {
     return response('API is alive!');
 });
 
-//Auth::routes(['verify' => false]);
+//
