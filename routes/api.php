@@ -27,8 +27,13 @@ Route::group(['prefix' => 'auth'], function () {
 //Route::get('/news/{news}', 'NewsController@show');
 //Route::post('/news', 'NewsController@store');
 //Route::resource('news', 'NewsController');
-Route::group(['middleware' => ['auth:api', 'verified']], function () {
+
+Route::group(['middleware' => ['auth:api'/*, 'verified'*/]], function () {
     Route::get('user', 'AuthController@user')->name('user');
-    Route::resource('news', 'NewsController')->middleware('verified');
+    Route::post('user/subscribe/{id}', 'AuthController@subscribe')->name('user.subscribe');
+
+    Route::resource('news', 'NewsController');
+    Route::resource('comments', 'CommentsController');
+   // Route::delete('news/{id}', 'NewsController@destroy');
 });
 

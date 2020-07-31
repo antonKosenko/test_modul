@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class NewsUpdateRequest extends FormRequest
+class CommentCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +25,16 @@ class NewsUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => [
-                'string',
-                'max:120',
+            'news_id' => [
+                'integer',
+                'required',
+            ],
+            'parent_id' => [
+                'integer',
             ],
             'body' => [
                 'string',
+                'required',
             ],
         ];
     }

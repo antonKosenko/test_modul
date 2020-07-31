@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use App\Notifications\SignupActivate;
+use Illuminate\Support\Facades\Log;
 
 class VerificationController extends Controller
 {

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserCreateFormRequest;
 use App\Http\Requests\UserLoginFormRequest;
+use App\Models\Comments;
+use App\Models\News;
 use App\Models\User;
+use App\Models\UsersSubscribeNews;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -75,8 +78,22 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
+       $user->countNews = (new News)->where('user_id', Auth::id())->count();
+       $user->countComments = (new Comments)->where('user_id', Auth::id())->count();
+       $user->countSubscribes = (new UsersSubscribeNews)->where('subscribe_user_id', Auth::id())->count();
+
         return response()->json([
             'data' => $user,
         ]);
+    }
+
+    public function subscribe(int $id)
+    {
+        $subscribe = new UsersSubscribeNews();
+        $subscribe->user_id = Auth::id();
+        $subscribe->subscribe_user_id = $id;
+        $subscribe->save();
+
+        return $subscribe;
     }
 }
