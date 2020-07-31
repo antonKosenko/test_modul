@@ -26,6 +26,7 @@ class NewsUpdateRequest extends FormRequest
     {
         return [
             'title' => [
+                 Rule::unique('news', 'title'),
                 'string',
                 'max:120',
             ],

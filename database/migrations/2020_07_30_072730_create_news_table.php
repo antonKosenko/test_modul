@@ -23,6 +23,8 @@ class CreateNewsTable extends Migration
             $table->string('title', 120);
             $table->text('body');
             $table->timestamps();
+
+            $table->unique(["title"], 'title');
         });
     }
 
