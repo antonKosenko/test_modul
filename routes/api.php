@@ -24,9 +24,8 @@ Route::group(['prefix' => 'auth'], function () {
 Route::group(['middleware' => ['auth:api'/*, 'verified'*/]], function () {
     Route::get('user', 'AuthController@user')->name('user');
     Route::post('user/subscribe/{id}', 'AuthController@subscribe')->name('user.subscribe');
-
-    Route::resource('news', 'NewsController');
     Route::get('news/top', 'NewsController@topComments');
+    Route::resource('news', 'NewsController');
     Route::resource('comments', 'CommentsController');
 });
 

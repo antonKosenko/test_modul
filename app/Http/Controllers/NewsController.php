@@ -70,15 +70,9 @@ class NewsController extends Controller
 
     public function topComments()
     {
-        $tableNews = (new News)->getTable();
-        $tableComment = (new Comments)->getTable();
-
-        return News::select("$tableNews.*")
-            ->selectRaw("count($tableComment.news_id) as count")
-            ->leftjoin($tableComment, "$tableComment.news_id", "=", "$tableNews.id")
-            ->orderBy('count', "DESC")
-            ->groupBy("$tableNews.id")
-            ->paginate();
+        return News::withCount('comments')
+            ->orderBy('comments_count', 'desc')
+            ->get();
     }
 
     private function checkIsOwner($news)
