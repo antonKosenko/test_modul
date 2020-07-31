@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Passport\HasApiTokens;
 
 /**
@@ -48,7 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'email_confirmation_token',
     ];
 
     /**
@@ -57,7 +59,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'email_confirmation_token',
     ];
 
     /**
@@ -68,4 +70,28 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        Log::debug('Confirm email: ' . route('verify_email', ['hash' => $this->email_confirmation_token ]));
+        //$this->notify(new VerifyEmail);
+    }
+
+    /**
+     * Mark the given user's email as verified.
+     *
+     * @return bool
+     */
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+            'email_confirmation_token' => null,
+        ])->save();
+    }
 }

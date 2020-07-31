@@ -23,14 +23,23 @@ class AuthController extends Controller
     {
         $user = User::create(array_merge(
             $request->only('name', 'email'),
-            ['password' => bcrypt($request->password)]
+            [
+                'password' => bcrypt($request->password),
+                'email_confirmation_token' => $this->generateToken(),
+            ]
         ));
 
+        $user->sendEmailVerificationNotification();
+
         return response()->json([
-            'date' => $user,
+            'data' => $user,
         ]);
     }
 
+    /**
+     * @param UserLoginFormRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(UserLoginFormRequest $request)
     {
         $credentials = $request->only('email', 'password');
@@ -71,6 +80,29 @@ class AuthController extends Controller
     }
 
     /**
+     * Mark the user's email address as verified.
+     *
+     * @param string $hash
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verify(string $hash)
+    {
+        $user = User::whereNull('email_verified_at')
+            ->where('email_confirmation_token', $hash)
+            ->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        $user->markEmailAsVerified();
+
+        return response()->json([
+            'message' => 'Email confirmed',
+        ]);
+    }
+
+    /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -87,6 +119,10 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @param int $id
+     * @return UsersSubscribeNews
+     */
     public function subscribe(int $id)
     {
         $subscribe = new UsersSubscribeNews();
@@ -95,5 +131,12 @@ class AuthController extends Controller
         $subscribe->save();
 
         return $subscribe;
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateToken() {
+        return md5(microtime(true));
     }
 }

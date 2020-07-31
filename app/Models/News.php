@@ -36,6 +36,4 @@ class News extends Model
     {
         return $this->hasMany(Comments::class, 'news_id', 'id');
     }
-
-
 }

@@ -2,6 +2,7 @@
 use App\Http\Controllers\NewsController;
 use Illuminate\Http\Request;
 Use App\Article;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,16 +15,19 @@ Use App\Article;
 |
 */
 
-Auth::routes(['verify' => false]);
+//Auth::routes(['verify' => true]);
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('register', 'AuthController@register')->name('register');
     Route::post('login', 'AuthController@login')->name('login');
     Route::post('logout', 'AuthController@logout')->middleware('auth:api')->name('logout');
+
+    Route::get('/email/verify/{hash}', 'AuthController@verify')
+        ->name('verify_email');
 });
 
 
-Route::group(['middleware' => ['auth:api'/*, 'verified'*/]], function () {
+Route::group(['middleware' => ['auth:api', 'verified']], function () {
     Route::get('user', 'AuthController@user')->name('user');
     Route::post('user/subscribe/{id}', 'AuthController@subscribe')->name('user.subscribe');
     Route::get('news/top', 'NewsController@topComments');
