@@ -72,7 +72,7 @@ class NewsController extends Controller
     {
         return News::withCount('comments')
             ->orderBy('comments_count', 'desc')
-            ->get();
+            ->paginate();
     }
 
     private function checkIsOwner($news)

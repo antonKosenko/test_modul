@@ -14,10 +14,6 @@ $factory->define(Comments::class, function (Faker $faker) {
 
     $faker->boolean(70) && $commentsIds ? $parentId = $faker->randomElement($commentsIds) : $parentId = null;
 
-
-    echo count($commentsIds) . PHP_EOL;
-
-
     return [
         'body' => $faker->text,
         'user_id' => $faker->randomElement($usersIds),
