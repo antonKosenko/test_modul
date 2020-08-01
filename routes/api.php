@@ -32,6 +32,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
     Route::post('user/subscribe/{id}', 'AuthController@subscribe')->name('user.subscribe');
     Route::get('news/top', 'NewsController@topComments')->name('news.top');
     Route::resource('news', 'NewsController');
+    Route::get('news/{id}', 'NewsController@show')->name('news');
     Route::resource('comments', 'CommentsController');
 });
 

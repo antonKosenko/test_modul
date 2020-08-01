@@ -2,18 +2,31 @@
 
 namespace App\Observers;
 
+use App\Jobs\SendEmailSubscribers;
 use App\Models\News;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Models\UsersSubscribeNews;
+use \Auth;
 use App\Notifications\NewsCreate;
-use Illuminate\Support\Facades\Notification;
 
 class NewsObserver
 {
     public function saved(News $news)
     {
-        // @TODO send notis subscribes
 
-        Log::warning($news->user_id);
+        $subscribesIds =   (new UsersSubscribeNews)->where('subscribe_user_id', $news->user_id)->pluck('user_id')->toArray();
+        $users = (new User)->whereIn('id', $subscribesIds)->get()->toArray();
+
+        if($users){
+            foreach ($users as $user){
+                $arrayNotis = [
+                    'name' => $user['name'],
+                    'email' => $user['email'],
+                    'url' => route('news', $news->id)
+                ];
+                SendEmailSubscribers::dispatch($arrayNotis);
+            }
+        }
 
     }
 }

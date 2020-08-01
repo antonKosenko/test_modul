@@ -2,26 +2,19 @@
 
 namespace Tests\Feature\controllers;
 
+use App\Models\News;
 use App\Models\User;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Dingo\Api\Routing\UrlGenerator;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 class NewsControllerTest extends TestCase
 {
-
-    protected $token;
-    protected $user;
 
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->user = factory(User::class)->create();
     }
 
     /**
@@ -30,11 +23,13 @@ class NewsControllerTest extends TestCase
      * @return void
      */
 
-    /*public function testCanGetListOfNews()
+    public function testCanGetListOfNews()
     {
-        $this->actingAs($this->user)
-            ->patchJson('api/news', [])
-            ->assertSuccessful()
+
+        $user = factory(User::class)->create();
+        $this->actingAs($user, 'api')
+            ->json('get', 'api/news', [])
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => ['*' => [
                     'id',
@@ -45,54 +40,66 @@ class NewsControllerTest extends TestCase
                     'updated_at',
                     'comments' => ['*' => []]
                 ]],
-                'total',
-                'count',
-                'per_page',
-                'current_page',
-                'total_pages',
-                'links',
+
+                "first_page_url",
+                "from",
+                "last_page",
+                "last_page_url",
+                "next_page_url",
+                "path",
+                "per_page",
+                "prev_page_url",
+                "to",
+                "total"
 
             ]);
 
-        $this->assertDatabaseHas('users', [
-            'id' => $this->user->id,
-            'name' => 'Test User',
-            'email' => 'test@test.app',
-        ]);
-    }*/
-     public function testCanGetListOfNews()
-     {
-         $this->user = factory(User::class)->create();
+    }
 
 
-         //dd(auth()->guard('api'));
-         $this->actingAs($this->user);
+    public function testCanStoreNews()
+    {
 
-         $this->get(
-             'api/news'
-//             ['Accept' => 'application/json', 'Authorization' => 'Bearer ' . $this->token]
-         )
-             ->assertStatus(200)
-             ->assertJsonStructure([
-                 'data' => ['*' => [
-                     'id',
-                     'user_id',
-                     'title',
-                     'body',
-                     'created_at',
-                     'updated_at',
-                     'comments' => ['*' => []]
-                 ]],
-                 'meta' => [
-                     'pagination' => [
-                         'total',
-                         'count',
-                         'per_page',
-                         'current_page',
-                         'total_pages',
-                         'links',
-                     ]
-                 ]
-             ]);
-     }
+        $news = factory(News::class)->create();
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user, 'api')
+            ->json('post', 'api/news', ['title' => $news->title . rand(1, 100), 'body' => $news->body])
+            ->assertStatus(201)
+            ->assertJsonStructure([
+                "title",
+                "body",
+                "user_id",
+                "updated_at",
+                "created_at",
+                "id"
+            ]);
+
+    }
+
+    public function testCanUpdateNews()
+    {
+        $user = factory(User::class)->create();
+        $news = factory(News::class)->create(['user_id' => $user->id]);
+
+        $this->actingAs($user, 'api')
+            ->json('patch', 'api/news/' . $news->id, ['title' => $news->title . rand(1, 100), 'body' => $news->body . $news->body])
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                "message",
+            ]);
+    }
+
+    public function testCanDeleteNews()
+    {
+        $user = factory(User::class)->create();
+        $news = factory(News::class)->create(['user_id' => $user->id]);
+
+        $this->actingAs($user, 'api')
+            ->json('delete', 'api/news/' . $news->id)
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                "message",
+            ]);
+    }
 }

@@ -7,7 +7,6 @@ use App\Http\Requests\NewsUpdateRequest;
 use App\Models\Comments;
 use App\Models\News;
 use App\Http\Requests\NewsCreateRequest;
-use App\Models\User;
 use \Auth;
 use DB;
 use Prettus\Validator\Contracts\ValidatorInterface;
