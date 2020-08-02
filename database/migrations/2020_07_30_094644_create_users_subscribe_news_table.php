@@ -18,21 +18,9 @@ class CreateUsersSubscribeNewsTable extends Migration
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->comment('id user');
             $table->integer('subscribe_user_id')->unsigned()->comment('id user subscribe');
-
-//            $table->unique(["user_id", "subscribe_user_id"], 'user_subscribe_user');
             $table->index(["user_id"], 'user');
             $table->index(["subscribe_user_id"], 'subscribe_user_id');
 
-
-//            $table->foreign('user_id')
-//                ->references('id')->on('users')
-//                ->onDelete('restrict')
-//                ->onUpdate('restrict');
-//
-//            $table->foreign('subscribe_user_id')
-//                ->references('id')->on('users')
-//                ->onDelete('cascade')
-//                ->onUpdate('cascade');
         });
     }
 
