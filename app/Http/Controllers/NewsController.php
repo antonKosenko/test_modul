@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AudienceUpdateRequest;
+use App\Services\NewsServices;
+use Exception;
+
 use App\Http\Requests\NewsUpdateRequest;
 use App\Models\Comments;
 use App\Models\News;
@@ -14,6 +17,14 @@ use Prettus\Validator\Exceptions\ValidatorException;
 
 class NewsController extends Controller
 {
+
+    private $newsService;
+
+    public function __construct()
+    {
+        $this->newsService = new NewsServices();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,50 +32,50 @@ class NewsController extends Controller
      */
     public function index()
     {
-        return News::with('comments')->paginate();
+        return $this->newsService->getNewsList();
     }
 
-
+    /**
+     * @param NewsCreateRequest $request
+     * @return News
+     */
     public function store(NewsCreateRequest $request)
     {
-        $news = new News($request->validated());
-        $news->user_id = Auth::id();
-        $news->save();
-
-        return $news;
+        return $this->newsService->createNews($request->validated());
     }
 
     public function show($id)
     {
-        return $news = News::with('comments')->findOrFail($id);
+        return $this->newsService->getNews($id);
     }
 
 
     public function destroy(News $news)
     {
-        $this->checkIsOwner($news);
-
-        DB::transaction(function () use ($news) {
-            (new Comments)->deleteCommentsByNews($news->id);
-            $news->delete();
-        });
-
-        return response()->json([
-            'message' => 'News deleted.',
-        ]);
+        try {
+            $this->newsService->destroy($news);
+            return response()->json([
+                'message' => 'News deleted.',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function update(NewsUpdateRequest $request, News $news)
     {
-        $this->checkIsOwner($news);
-
-        $news->fill($request->validated());
-        $news->save();
-
-        return response()->json([
-            'message' => 'News updated.',
-        ]);
-
+        try {
+            $this->newsService->update($request, $news);
+            return response()->json([
+                'message' => 'News updated.',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function topComments()
@@ -74,11 +85,6 @@ class NewsController extends Controller
             ->paginate();
     }
 
-    private function checkIsOwner($news)
-    {
-        if ($news->user_id != Auth::id()) {
-            abort(403);
-        }
-    }
+
 
 }
