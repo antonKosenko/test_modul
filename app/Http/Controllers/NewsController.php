@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AudienceUpdateRequest;
 use App\Services\NewsServices;
 use Exception;
-
 use App\Http\Requests\NewsUpdateRequest;
-use App\Models\Comments;
 use App\Models\News;
 use App\Http\Requests\NewsCreateRequest;
-use \Auth;
-use DB;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
 
 class NewsController extends Controller
 {
